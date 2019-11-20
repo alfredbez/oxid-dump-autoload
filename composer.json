@@ -1,5 +1,6 @@
 {
     "name": "alfredbez/oxid-dump-autoload",
+    "version": "0.1.0",
     "authors": [
         {
             "name": "Alfred Bez",
