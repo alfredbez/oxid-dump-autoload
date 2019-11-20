@@ -1,0 +1,11 @@
+{
+    "name": "alfredbez/oxid-dump-autoload",
+    "authors": [
+        {
+            "name": "Alfred Bez",
+            "email": "alfred.bez@googlemail.com"
+        }
+    ],
+    "require": {},
+    "bin": ["bin/oxid-dump-autoload"]
+}
