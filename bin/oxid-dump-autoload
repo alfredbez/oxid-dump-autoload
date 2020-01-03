@@ -37,9 +37,8 @@ $shopIdcalculator = new ShopIdCalculator($fileCache);
 $variablesLocator = new ModuleVariablesLocator($fileCache, $shopIdcalculator);
 $moduleChainGenerator = new ModuleChainsGenerator($variablesLocator);
 
-$modules = $moduleChainGenerator->getModuleVariablesLocator()->getModuleVariable('aModules');
-foreach ($modules as $baseClassName => $chain) {
-    foreach (explode('&', $chain) as $chainedClassName) {
+foreach (array_keys($moduleChainGenerator->getModuleVariablesLocator()->getModuleVariable('aModules')) as $baseClassName) {
+    foreach ($moduleChainGenerator->getActiveChain($baseClassName) as $chainedClassName) {
         $lastClassName = $lastClassName ?? $baseClassName;
         $moduleClass = $chainedClassName . '_parent';
         if (!class_exists($moduleClass, false)) {
