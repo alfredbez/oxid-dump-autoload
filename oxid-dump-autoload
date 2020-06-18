@@ -1,0 +1,64 @@
+#!/usr/bin/env php
+<?php
+use AlfredBez\OxidDumpAutoload\{AliasDumper, AliasBuilder, ClassFilter, Chain\ChainFactory};
+
+$dirname = dirname(__FILE__);
+$vendorFolder = substr($dirname, 0, strpos($dirname, '/vendor/') + 8);
+require_once($vendorFolder . 'autoload.php');
+
+$climate = new League\CLImate\CLImate;
+
+$climate->arguments->add([
+    'source' => [
+        'prefix'       => 's',
+        'longPrefix'   => 'source',
+        'description'  => 'You can specify a source as a classlist. Possible values are: '
+        . '"source/modules/myvendor/mymodule/metadata.php" or just "shop" if you want all shop classes',
+        'defaultValue' => 'shop',
+    ],
+    'filter' => [
+        'prefix'       => 'f',
+        'longPrefix'   => 'filter',
+        'description'  => 'Filters the given classes before creating the aliases. You can add multiple filters '
+        . 'seperated by a comma',
+    ],
+    'path' => [
+        'prefix'      => 'p',
+        'longPrefix'  => 'path',
+        'description' => 'Write output to this path instead of printing to STDOUT',
+    ],
+    'help' => [
+        'longPrefix'  => 'help',
+        'description' => 'Prints a usage statement',
+        'noValue'     => true,
+    ],
+]);
+
+$climate->arguments->parse();
+if ($climate->arguments->defined('help')) {
+    $climate->usage();
+    exit;
+}
+
+$filters = $climate->arguments->get('filter');
+$filterClass = null;
+if (strlen($filters) > 0) {
+    $filterClass = new ClassFilter($filters);
+}
+$aliasBuilder = new AliasBuilder($filterClass);
+
+try {
+    $chain = ChainFactory::createChainFor($climate->arguments->get('source'))->getClassChain();
+} catch (\RuntimeException $exception) {
+    $climate->red($exception->getMessage());
+    exit;
+}
+
+$dumper = new AliasDumper();
+$dump = $dumper->dump($aliasBuilder->buildAliasesFor($chain));
+$path = $climate->arguments->get('path');
+if (strlen($path) > 0) {
+    file_put_contents($path, $dump);
+} else {
+    echo $dump;
+}

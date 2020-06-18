@@ -7,6 +7,17 @@
             "email": "alfred.bez@googlemail.com"
         }
     ],
-    "require": {},
-    "bin": ["bin/oxid-dump-autoload"]
+    "require": {
+        "league/climate": "^3.5"
+    },
+    "bin": ["oxid-dump-autoload"],
+    "require-dev": {
+        "phpunit/phpunit": "^9"
+    },
+    "autoload": {
+        "psr-4": {
+          "AlfredBez\\OxidDumpAutoload\\": "src/",
+          "AlfredBez\\OxidDumpAutoload\\Tests\\": "tests/"
+        }
+    }
 }
