@@ -27,6 +27,12 @@ $climate->arguments->add([
         'longPrefix'  => 'path',
         'description' => 'Write output to this path instead of printing to STDOUT',
     ],
+    'only-active' => [
+        'longPrefix'  => 'only-active',
+        'prefix'      => 'a',
+        'description' => 'Use only active classes (works only with shop-source)',
+        'noValue'     => true,
+    ],
     'help' => [
         'longPrefix'  => 'help',
         'description' => 'Prints a usage statement',
@@ -47,8 +53,9 @@ if (strlen($filters) > 0) {
 }
 $aliasBuilder = new AliasBuilder($filterClass);
 
+$active = $climate->arguments->defined('only-active');
 try {
-    $chain = ChainFactory::createChainFor($climate->arguments->get('source'))->getClassChain();
+    $chain = ChainFactory::createChainFor($climate->arguments->get('source'))->getClassChain($active);
 } catch (\RuntimeException $exception) {
     $climate->red($exception->getMessage());
     exit;

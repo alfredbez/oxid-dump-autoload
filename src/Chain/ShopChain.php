@@ -15,7 +15,7 @@ final class ShopChain implements ChainInterface
         $this->loadBootstrap();
     }
 
-    public function getClassChain(): array
+    public function getClassChain(bool $onlyActiveClasses = false): array
     {
         $fileCache = new FileCache();
         $shopIdcalculator = new ShopIdCalculator($fileCache);
@@ -23,9 +23,30 @@ final class ShopChain implements ChainInterface
         $moduleChainGenerator = new ModuleChainsGenerator($variablesLocator);
         $modules = $moduleChainGenerator->getModuleVariablesLocator()->getModuleVariable('aModules');
 
+        if ($onlyActiveClasses) {
+            return $this->getChainForActiveClasses($moduleChainGenerator);
+        }
+
+        return $this->getChainForAllClasses($moduleChainGenerator);
+    }
+
+    private function getChainForActiveClasses($moduleChainGenerator)
+    {
         $chain = [];
+
         foreach (array_keys($modules) as $baseClassName) {
             $chain[$baseClassName] = $moduleChainGenerator->getActiveChain($baseClassName);
+        }
+
+        return $chain;
+    }
+
+    private function getChainForAllClasses($moduleChainGenerator)
+    {
+        $chain = [];
+        $modules = $moduleChainGenerator->getModuleVariablesLocator()->getModuleVariable('aModules');
+        foreach ($modules as $baseClassName => $classChain) {
+            $chain[$baseClassName] = explode('&', $classChain);
         }
 
         return $chain;
