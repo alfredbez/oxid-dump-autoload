@@ -9,7 +9,7 @@ final class MetadataChain implements ChainInterface
         // TODO: not supported yet
     }
 
-    public function getClassChain(bool $onlyActiveClasses = false): array
+    public function getClassChain(bool $onlyActiveClasses = false, int $shopId = 1): array
     {
         // your code
     }

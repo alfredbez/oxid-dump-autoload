@@ -16,6 +16,12 @@ $climate->arguments->add([
         . '"source/modules/myvendor/mymodule/metadata.php" or just "shop" if you want all shop classes',
         'defaultValue' => 'shop',
     ],
+    'shopid' => [
+        'prefix'       => 'i',
+        'longPrefix'   => 'shopid',
+        'description'  => 'Set a custom shop-id (works only when source is set to "shop")',
+        'defaultValue' => 1,
+    ],
     'filter' => [
         'prefix'       => 'f',
         'longPrefix'   => 'filter',
@@ -30,7 +36,7 @@ $climate->arguments->add([
     'only-active' => [
         'longPrefix'  => 'only-active',
         'prefix'      => 'a',
-        'description' => 'Use only active classes (works only with shop-source)',
+        'description' => 'Use only active classes (works only when source is set to "shop")',
         'noValue'     => true,
     ],
     'help' => [
@@ -54,8 +60,9 @@ if (strlen($filters) > 0) {
 $aliasBuilder = new AliasBuilder($filterClass);
 
 $active = $climate->arguments->defined('only-active');
+$shopId = (int) $climate->arguments->get('shopid') ?: 1;
 try {
-    $chain = ChainFactory::createChainFor($climate->arguments->get('source'))->getClassChain($active);
+    $chain = ChainFactory::createChainFor($climate->arguments->get('source'))->getClassChain($active, $shopId);
 } catch (\RuntimeException $exception) {
     $climate->red($exception->getMessage());
     exit;

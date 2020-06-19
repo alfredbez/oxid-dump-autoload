@@ -5,7 +5,6 @@ namespace AlfredBez\OxidDumpAutoload\Chain;
 use OxidEsales\Eshop\Core\FileCache;
 use OxidEsales\Eshop\Core\Module\ModuleChainsGenerator;
 use OxidEsales\Eshop\Core\Module\ModuleVariablesLocator;
-use OxidEsales\Eshop\Core\ShopIdCalculator;
 use RuntimeException;
 
 final class ShopChain implements ChainInterface
@@ -15,10 +14,20 @@ final class ShopChain implements ChainInterface
         $this->loadBootstrap();
     }
 
-    public function getClassChain(bool $onlyActiveClasses = false): array
+    public function getClassChain(bool $onlyActiveClasses = false, int $shopId = 1): array
     {
         $fileCache = new FileCache();
-        $shopIdcalculator = new ShopIdCalculator($fileCache);
+        $shopIdcalculator = new class ($shopId) {
+            private $shopId;
+            public function __construct(int $shopId)
+            {
+                $this->shopId = $shopId;
+            }
+            public function getShopId()
+            {
+                return $this->shopId;
+            }
+        };
         $variablesLocator = new ModuleVariablesLocator($fileCache, $shopIdcalculator);
         $moduleChainGenerator = new ModuleChainsGenerator($variablesLocator);
         $modules = $moduleChainGenerator->getModuleVariablesLocator()->getModuleVariable('aModules');
