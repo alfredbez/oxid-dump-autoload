@@ -9,7 +9,7 @@ use RuntimeException;
 
 final class ShopChain
 {
-    public function __construct($source)
+    public function __construct()
     {
         $this->loadBootstrap();
     }
