@@ -2,7 +2,7 @@
 
 namespace AlfredBez\OxidDumpAutoload\Chain;
 
-final class MetadataChain implements ChainInterface
+final class MetadataChain
 {
     public function __construct($source)
     {

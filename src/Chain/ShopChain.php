@@ -7,7 +7,7 @@ use OxidEsales\Eshop\Core\Module\ModuleChainsGenerator;
 use OxidEsales\Eshop\Core\Module\ModuleVariablesLocator;
 use RuntimeException;
 
-final class ShopChain implements ChainInterface
+final class ShopChain
 {
     public function __construct($source)
     {
