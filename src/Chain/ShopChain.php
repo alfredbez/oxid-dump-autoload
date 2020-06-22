@@ -30,7 +30,6 @@ final class ShopChain implements ChainInterface
         };
         $variablesLocator = new ModuleVariablesLocator($fileCache, $shopIdcalculator);
         $moduleChainGenerator = new ModuleChainsGenerator($variablesLocator);
-        $modules = $moduleChainGenerator->getModuleVariablesLocator()->getModuleVariable('aModules');
 
         if ($onlyActiveClasses) {
             return $this->getChainForActiveClasses($moduleChainGenerator);
@@ -43,6 +42,7 @@ final class ShopChain implements ChainInterface
     {
         $chain = [];
 
+        $modules = $moduleChainGenerator->getModuleVariablesLocator()->getModuleVariable('aModules');
         foreach (array_keys($modules) as $baseClassName) {
             $chain[$baseClassName] = $moduleChainGenerator->getActiveChain($baseClassName);
         }
