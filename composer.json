@@ -7,7 +7,9 @@
         }
     ],
     "require": {
-        "league/climate": "^3.5"
+        "league/climate": "^3.5",
+        "oxid-esales/oxideshop-ce": "^6.0",
+        "oxid-esales/oxideshop-unified-namespace-generator": "^2.0"
     },
     "bin": ["oxid-dump-autoload"],
     "require-dev": {
