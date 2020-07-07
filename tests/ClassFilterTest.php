@@ -9,7 +9,7 @@ class ClassFilterTest extends TestCase
 {
     public function testCanFilterSingleString()
     {
-        $filter = new ClassFilter('vendor1');
+        $filter = ClassFilter::fromString('vendor1');
 
         $this->assertFalse($filter->shouldBeFiltered('oe/tags/bla'));
         $this->assertTrue($filter->shouldBeFiltered('vendor1/tags/bla'));
@@ -17,13 +17,22 @@ class ClassFilterTest extends TestCase
 
     public function testWorksWithMultipleFiltersAndWhitespace()
     {
-        //                      This space is here on purpose
-        //                                 |
-        //                                 v
-        $filter = new ClassFilter('vendor1, oe/');
+        //                              This space is here on purpose
+        //                                         |
+        //                                         v
+        $filter = ClassFilter::fromString('vendor1, oe/');
 
         $this->assertTrue($filter->shouldBeFiltered('oe/tags/bla'));
         $this->assertTrue($filter->shouldBeFiltered('vendor1/tags/bla'));
         $this->assertFalse($filter->shouldBeFiltered('oetest/foo'));
+    }
+
+    public function testCanBeCreatedWithArray()
+    {
+        $filter = ClassFilter::fromArray(['vendor1', 'vendor2']);
+
+        $this->assertFalse($filter->shouldBeFiltered('oe/tags/bla'));
+        $this->assertTrue($filter->shouldBeFiltered('vendor1/tags/bla'));
+        $this->assertTrue($filter->shouldBeFiltered('vendor2/tags/bla'));
     }
 }

@@ -1,15 +1,23 @@
 #!/usr/bin/env php
 <?php
-use AlfredBez\OxidDumpAutoload\{AliasDumper, AliasBuilder, ClassFilter};
+use AlfredBez\OxidDumpAutoload\{AliasDumper, AliasBuilder, ClassFilter, Config};
 use AlfredBez\OxidDumpAutoload\Chain\{ShopChain, MetadataChain};
 
 $dirname = dirname(__FILE__);
-$vendorFolder = substr($dirname, 0, strpos($dirname, '/vendor/') + 8);
+$vendorFolder = file_exists($dirname . '/vendor/')
+    ? $dirname . '/vendor/'
+    : substr($dirname, 0, strpos($dirname, '/vendor/') + 8);
 require_once($vendorFolder . 'autoload.php');
 
 $climate = new League\CLImate\CLImate;
 
 $climate->arguments->add([
+    'config' => [
+        'prefix'       => 'c',
+        'longPrefix'   => 'config',
+        'description'  => 'Path to custom config file',
+        'defaultValue' => '.autoload.oxid.config.json',
+    ],
     'source' => [
         'prefix'       => 's',
         'longPrefix'   => 'source',
@@ -22,6 +30,7 @@ $climate->arguments->add([
         'longPrefix'   => 'shopid',
         'description'  => 'Set a custom shop-id (works only when source is set to "shop")',
         'defaultValue' => 1,
+        'castTo'       => 'int',
     ],
     'filter' => [
         'prefix'       => 'f',
@@ -53,22 +62,38 @@ if ($climate->arguments->defined('help')) {
     exit;
 }
 
-$filters = $climate->arguments->get('filter');
+$arguments = [];
+$argumentKeys = ['filter','only-active','shopid','source','path'];
+foreach ($argumentKeys as $argumentKey) {
+    if ($climate->arguments->defined($argumentKey)) {
+        $arguments[$argumentKey] = $climate->arguments->get($argumentKey);
+    }
+}
+$config = new Config($arguments);
+try {
+    $config->load($climate->arguments->get('config'));
+} catch (\InvalidArgumentException $exception) {
+    $climate->yellow($exception->getMessage());
+} catch (\UnexpectedValueException $exception) {
+    $climate->red($exception->getMessage());
+    exit;
+}
+
 $filterClass = null;
-if (strlen($filters) > 0) {
-    $filterClass = new ClassFilter($filters);
+if (is_array($config->get('filter'))) {
+    $filterClass = ClassFilter::fromArray($config->get('filter'));
+}
+if (is_string($config->get('filter')) && strlen($config->get('filter')) > 0) {
+    $filterClass = ClassFilter::fromString($config->get('filter'));
 }
 $aliasBuilder = new AliasBuilder($filterClass);
 
-$active = $climate->arguments->defined('only-active');
-$shopId = (int) $climate->arguments->get('shopid') ?: 1;
 try {
-    $source = $climate->arguments->get('source');
-    if ($source === 'shop') {
-        $chain = (new ShopChain())->getClassChain($active, $shopId);
+    if ($config->get('source') === 'shop') {
+        $chain = (new ShopChain())->getClassChain($config->get('only-active'), $config->get('shopid'));
     }
     else {
-        $chain = (new MetadataChain($source))->getClassChain();
+        $chain = (new MetadataChain($config->get('source')))->getClassChain();
     }
 } catch (\Throwable $exception) {
     $climate->red($exception->getMessage());
@@ -77,9 +102,8 @@ try {
 
 $dumper = new AliasDumper();
 $dump = $dumper->dump($aliasBuilder->buildAliasesFor($chain));
-$path = $climate->arguments->get('path');
-if (strlen($path) > 0) {
-    file_put_contents($path, $dump);
+if (strlen($config->get('path')) > 0) {
+    file_put_contents($config->get('path'), $dump);
 } else {
     echo $dump;
 }

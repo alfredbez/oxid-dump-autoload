@@ -1,0 +1,8 @@
+{
+    "filter": [
+        "legacymodule1/",
+        "legacymodule2/",
+        "Psr4ClassWithoutNamespace",
+        "VendorName\\ModuleName"
+    ]
+}

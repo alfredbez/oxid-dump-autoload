@@ -6,9 +6,21 @@ final class ClassFilter implements ClassFilterInterface
 {
     private $filters = [];
 
-    public function __construct(?string $filter = '')
+    public static function fromString(?string $filter = '')
     {
-        $this->filters = explode(',', $filter);
+        $filters = explode(',', $filter);
+
+        return new self($filters);
+    }
+
+    public static function fromArray(array $filter = [])
+    {
+        return new self($filter);
+    }
+
+    private function __construct(array $filter)
+    {
+        $this->filters = $filter;
     }
 
     public function shouldBeFiltered($element): bool
