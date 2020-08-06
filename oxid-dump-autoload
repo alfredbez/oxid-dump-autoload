@@ -51,6 +51,7 @@ $climate->arguments->add([
     ],
     'help' => [
         'longPrefix'  => 'help',
+        'prefix'      => 'h',
         'description' => 'Prints a usage statement',
         'noValue'     => true,
     ],
