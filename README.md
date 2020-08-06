@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/gh/alfredbez/oxid-dump-autoload/branch/master/graph/badge.svg)](https://codecov.io/gh/alfredbez/oxid-dump-autoload)
+
 # Description
 
 Sometimes it's helpful to have the module-chain which is saved in the oxid database in a simple php file on the disk, e.g. for running static code analysis or to tell your IDE where to find a `*_parent` class. This little Tool allows you to generate a php-file which consinst of all `class_alias` statements used inside the shop.
