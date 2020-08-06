@@ -1,6 +1,6 @@
 #!/usr/bin/env php
 <?php
-use AlfredBez\OxidDumpAutoload\{AliasDumper, AliasBuilder, ClassFilter, Config};
+use AlfredBez\OxidDumpAutoload\{AliasDumper, AliasBuilder, ClassFilter, Config, ExtendsDumper};
 use AlfredBez\OxidDumpAutoload\Chain\{ShopChain, MetadataChain};
 
 $dirname = dirname(__FILE__);
@@ -55,6 +55,16 @@ $climate->arguments->add([
         'description' => 'Prints a usage statement',
         'noValue'     => true,
     ],
+
+    'extends' => [
+        'longPrefix'  => 'with-extends',
+        'prefix'      => 'e',
+        'description' => 'Do not use alias statements in the generated output but generated classes
+        that extend from their parent. You may want use this to support phpstan and phpstorm',
+        'noValue'     => true,
+        'defaultValue' => false,
+        'castTo'       => 'bool',
+    ]
 ]);
 
 $climate->arguments->parse();
@@ -101,7 +111,7 @@ try {
     exit;
 }
 
-$dumper = new AliasDumper();
+$dumper = $climate->arguments->defined('extends') ? new ExtendsDumper() : new AliasDumper();
 $dump = $dumper->dump($aliasBuilder->buildAliasesFor($chain));
 if (strlen($config->get('path')) > 0) {
     file_put_contents($config->get('path'), $dump);
