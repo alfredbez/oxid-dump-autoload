@@ -7,6 +7,9 @@ use OxidEsales\Eshop\Core\Module\ModuleChainsGenerator;
 use OxidEsales\Eshop\Core\Module\ModuleVariablesLocator;
 use RuntimeException;
 
+/**
+ * @codeCoverageIgnore
+ */
 final class ShopChain
 {
     public function __construct()

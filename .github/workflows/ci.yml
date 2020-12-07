@@ -11,6 +11,8 @@ jobs:
     - uses: php-actions/composer@v1
     - name: Run tests with phpunit
       run: vendor/bin/phpunit --coverage-clover coverage.xml
+    - name: Run infection
+      run: vendor/bin/infection --min-msi=100 --min-covered-msi=100
     - name: "Send code coverage report to Codecov.io"
       env:
           CODECOV_TOKEN: "${{ secrets.CODECOV_TOKEN }}"

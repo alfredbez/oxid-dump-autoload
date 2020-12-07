@@ -35,11 +35,6 @@ final class Config
         $this->config = array_merge($this->config, $json, $this->forceConfig);
     }
 
-    public function getConfig(): array
-    {
-        return $this->config;
-    }
-
     public function get($configKey)
     {
         return $this->config[$configKey];
