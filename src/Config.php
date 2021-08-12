@@ -37,6 +37,6 @@ final class Config
 
     public function get($configKey)
     {
-        return $this->config[$configKey];
+        return $this->config[$configKey] ?? null;
     }
 }
